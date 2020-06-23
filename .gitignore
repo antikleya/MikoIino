@@ -1,0 +1,4 @@
+logs/
+static/auth_consts.json
+venv/
+*__pycache__

@@ -1,0 +1,10 @@
+{
+  "wrong_server": "There is no servers you are looking for (available now: RU, EUW)",
+  "wrong_role": "There is no roles you are looking for (available now: Top, Jgl, Mid, Adc, Sup)",
+  "no_args_for_find": "Seems like you forgot about server or role",
+  "no_args_role": "Seems like you forgot about your new role :D",
+  "changed_role": "Your role changed successfully!",
+  "no_args_servers": "Seems like you forgot about your serves :D",
+  "changed_servers": "Your servers changed successfully!",
+  "internal_error": "Sorry. Internal error occurred!"
+}
