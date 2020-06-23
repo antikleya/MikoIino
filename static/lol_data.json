@@ -1,0 +1,4 @@
+{
+  "servers": ["ru", "euw"],
+  "lanes": ["top", "jgl", "mid", "adc", "sup"]
+}
