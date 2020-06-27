@@ -30,3 +30,6 @@ To compile and run this project, you will need:
 #### Deploy
 
 TBD
+
+#### Available commands:
+[Link](Commands.md)
