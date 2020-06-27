@@ -12,32 +12,13 @@ _message_format = 'Message "%s" from "%s" with answer "%s"'
 _message_log_filename = os.path.join(os.path.dirname(__file__), os.environ['MIKO_HOME'] + os.sep + "logs" + os.sep
                                      + "miko_" + datetime.datetime.now().strftime("%Y_%m_%d_%H-%M-%S") + ".log")
 
+if os.environ['MIKO_TEST'] == "1":
+    level = logging.DEBUG
+else:
+    level = logging.INFO
+
 # Init logging
-logging.basicConfig(format=_log_message_format, filename=_message_log_filename, filemode="w", level=logging.DEBUG)
-
-DEBUG_LOG = True
-
-
-def log_func(log_write=False):
-    """
-    Decorator for log function name
-    :param log_write: if True write in debug-log, else in info-log
-    :return: decorator
-    """
-
-    def decorator(func):
-        def wrapper(*args, **kwargs):
-
-            if log_write and DEBUG_LOG:
-                logging.debug("-" * 3 + ">" + func.__name__ + "()")
-            else:
-                logging.info("-" * 3 + ">" + func.__name__ + "()")
-
-            return func(*args, **kwargs)
-
-        return wrapper
-
-    return decorator
+logging.basicConfig(format=_log_message_format, filename=_message_log_filename, filemode="w", level=level)
 
 
 def class_construct(init):
@@ -63,7 +44,7 @@ def debug(tag, message):
     :rtype: None
     """
 
-    if DEBUG_LOG:
+    if level == logging.DEBUG:
         logging.debug(str(tag) + ": " + "~" * 5 + ">" + str(message))
 
 
