@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 import json
+import os
+
 import pkg_resources
 
-from utils.logger import debug
+from utils.logger import debug, class_construct
 
 
 class JsonHandler(object):
@@ -19,6 +21,7 @@ class JsonHandler(object):
 
     _TAG = "JsonHandler"
 
+    @class_construct
     def __init__(self):
         self._resource_package = __name__
 
@@ -91,12 +94,26 @@ class JsonHandler(object):
         return self._token
 
     @property
-    def channels(self) -> int:
+    def bot_channel(self) -> int:
         """
-        Get list of channels for bot
+        Get bot channel
         """
 
-        return self._channels
+        if os.environ['MIKO_TEST'] == "1":
+            return self._channels['test_channel']
+        else:
+            return self._channels['miko_channel']
+
+    @property
+    def clash_channel(self) -> int:
+        """
+        Get clash channel
+        """
+
+        if os.environ['MIKO_TEST'] == "1":
+            return self._channels['test_channel']
+        else:
+            return self._channels['clash_channel']
 
     @property
     def commands(self) -> list:
