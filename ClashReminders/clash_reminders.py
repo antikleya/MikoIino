@@ -2,7 +2,8 @@ import requests
 import time
 from multiprocessing import Process
 
-region_consts = {'EUW': 'euw1', 'RU': 'ru'}
+region_consts = {'EUW': 'euw1', 'RU': 'ru', 'euw1': 'euw1', 'ru': 'ru'}
+supported_regions = ['euw1', 'ru']
 # for now api_key filename is implemented as a constant
 path_to_api = 'key'
 
@@ -12,6 +13,9 @@ class GeneralReminder:
     _region = str
     _team_name = str
     processes = []
+
+    def get_region(self):
+        return _region
 
     def send_reminder(self, message: str):
         # to do: implement the reminding
@@ -24,14 +28,6 @@ class GeneralReminder:
         assert response.status_code == 200
         return response.json()
 
-    def start_reminder(self, target_times: list, messages: list, additional_func):
-        for i in range(len(target_times)):
-            tmp = time.time()
-            assert target_times[i] > tmp
-            time.sleep(target_times[i] - tmp)
-            self.send_reminder(messages[i])
-        additional_func()
-
 
 class TeamReminder(GeneralReminder):
 
@@ -40,8 +36,16 @@ class TeamReminder(GeneralReminder):
         self._api_key = open(filename, 'r').read()
         self._team_name = 'temp'
 
-    def empty_reset_func(self):
-        pass
+    def start_reminder(self, target_times: list):
+        try:
+            for i in target_times:
+                tmp = time.time()
+                assert i > tmp
+                time.sleep(i - tmp)
+                self.send_reminder('temp message')
+        except AssertionError:
+            print("cringe happened with reminder time")
+            return
 
     def _get_url(self, mode: str, param: str = ''):      # modes: summoner_by_name, team_by_summid, team_info
         url = 'https://' + self._region + '.api.riotgames.com/lol/'
@@ -66,8 +70,7 @@ class TeamReminder(GeneralReminder):
 
     def setup_reminder(self, summoner_name: str):
         reminder_time_day1, reminder_time_day2, self._team_name = self.clash_time_by_name(summoner_name)
-        process = Process(target=self.start_reminder, args=([reminder_time_day1, reminder_time_day2],
-                                                            ['cringe message 1', 'cringe message 2']))
+        process = Process(target=self.start_reminder, args=([reminder_time_day1, reminder_time_day2]))
         self.processes.append(process)
         process.start()
 
@@ -114,23 +117,58 @@ class BeginningOfTheWeekReminder(GeneralReminder):
         self._api_key = open(filename, 'r').read()
         self._region = region_consts[region.upper()]
 
-    def empty_shit(self):
-        pass
+    def start_reminder(self, target_time: int, additional_func):
+        try:
+            tmp = time.time()
+            assert target_time > tmp
+            time.sleep(target_time - tmp)
+            self.send_reminder("temp message")
+        except AssertionError:
+            print('cringe happened with beginning of the week reminder time')
+            return
+        additional_func()
 
-    def setup_reminder(self):
+    def setup_reminder(self, func):
         response_json = self.get_tournament_schedule()
         tournament_time = time.localtime(response_json[0]['schedule'][0]['registrationTime'] // 1000)
         target_time = time.mktime(tournament_time) - (tournament_time.tm_wday-1)*24*60*60
-        print(time.localtime(target_time))
-        process = Process(target=self.start_reminder, args=([target_time], ['cringe message'], self.empty_shit))
+        process = Process(target=self.start_reminder, args=(target_time, func))
         self.processes.append(process)
         process.start()
 
 
 # to do
 class ReminderService:
-    reminders = []
+    _reminders = {}
+
+    def __init__(self):
+        for i in supported_regions:
+            self._reminders[i] = {'team_reminders': [], 'week_start_reminder': BeginningOfTheWeekReminder(path_to_api, i)}
+
+    def _update_reminder(self, obj):
+        region = obj.get_region()
+        time_obj = time.localtime(time.time())
+        time_obj.tm_wday = 6
+        time_obj.tm_hour = 13
+        time_obj.tm_min = 0
+        time_obj.tm_sec = 0
+        target_time = time.mktime(time_obj)
+        time.sleep(target_time - time.time())
+        rem_list = self._reminders[obj.get_region()]['team_reminders']
+        for i in rem_list:
+            i.setup_reminder('sindol')  # to do: implement a method to get summoner names by team
+        time.sleep(47*60*60)
+        obj.setup_reminder(self._update_reminder)
+
+    def add_team_reminder(self, region: str):
+        assert region in supported_regions
+        self._reminders[region]['team_reminders'].append(TeamReminder(path_to_api, region))
 
 
-# rem = BeginningOfTheWeekReminder('key', 'euw')
-# rem.setup_reminder()
+def garbage():
+    print("garbage")
+
+
+rem = BeginningOfTheWeekReminder('key', 'euw')
+rem.start_reminder(time.time()+10, garbage)
+
