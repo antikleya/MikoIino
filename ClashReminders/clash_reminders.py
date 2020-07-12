@@ -86,7 +86,6 @@ class TeamReminder(GeneralReminder):
             url = self._get_url('team_by_summid', summoner_id)
             response = requests.get(url)
             assert response.status_code == 200
-            team_id = response.json()[0]['teamId']
 
             # getting team tier and name
             url = self._get_url('team_info', team_id)
