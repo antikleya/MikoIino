@@ -121,10 +121,6 @@ async def handle_client(reader, writer):
 
 
 valid_requests = {'get tournament schedule': get_tournament_schedule, 'get clash time': get_clash_time}
-'''
 loop = asyncio.get_event_loop()
 loop.create_task(asyncio.start_server(handle_client, 'localhost', 1488))
 loop.run_forever()
-'''
-a = 'get tournament schedule euw sindol'.split()
-print(get_clash_time(a).text)
