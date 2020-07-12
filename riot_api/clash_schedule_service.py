@@ -10,7 +10,7 @@ async def handle_client(reader, writer):
     split_request = request.split()
     val_req = ' '.join(split_request[0:3])
     if (len(val_req) < 3) or (val_req not in valid_requests.keys()):
-        response = 'Not a valid request ' + val_req
+        response = 'Error: Not a valid request - ' + val_req
     else:
         response = valid_requests[val_req](split_request, key)
         if not response.valid:
