@@ -3,6 +3,8 @@ from riot_api import get_tournament_schedule, get_clash_time
 path_to_api = 'key'
 port = 1488
 key = open(path_to_api).read()
+# ----------------- interface -----------------------
+# possible requests: get tournament schedule {region}, get clash time {region} {summoner_name}
 
 
 async def handle_client(reader, writer):
